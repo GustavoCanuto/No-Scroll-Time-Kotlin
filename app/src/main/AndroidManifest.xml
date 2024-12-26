@@ -13,21 +13,33 @@
         android:theme="@style/Theme.No_scroll_time"
         tools:targetApi="31">
 
-        <!-- Definição do serviço de acessibilidade com o atributo 'android:exported' -->
+        <!-- Serviço de Acessibilidade para bloquear acesso ao YouTube -->
         <service
             android:name=".BlockShortAccessService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:exported="false"> <!-- Adicionei android:exported="false" -->
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
-
-            <!-- Configurações do serviço de acessibilidade -->
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
+        <!-- Serviço de Acessibilidade para bloquear acesso ao Instagram Reels -->
+        <service
+            android:name=".BlockReelsAccessService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config_reels" />
+        </service>
+
+        <!-- Atividade principal -->
         <activity
             android:name=".MainActivity"
             android:exported="true">

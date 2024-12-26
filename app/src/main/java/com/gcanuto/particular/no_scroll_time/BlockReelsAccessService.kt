@@ -7,10 +7,10 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 
-class BlockShortAccessService : AccessibilityService() {
+class BlockReelsAccessService : AccessibilityService() {
 
     private val handler = Handler() // Criar o Handler
-    private val delayMillis: Long = 90000 // 10 segundos
+    private val delayMillis: Long = 90000 // 90 segundos (ajustado conforme necessidade)
 
     private val periodicTask = object : Runnable {
         override fun run() {
@@ -20,18 +20,18 @@ class BlockShortAccessService : AccessibilityService() {
                 if (rootNode != null) {
                     logNodeHierarchy(rootNode)
 
-                    // Executar as funções que você quer a cada 10 segundos
+                    // Executar as funções que você quer a cada 90 segundos
                     handleViewClick(null)  // Passe o evento real aqui se necessário
                     handleWindowChange()
 
                 } else {
-                    Log.e("BlockAccessService", "Root node is null")
+                    Log.e("BlockReelsAccessService", "Root node is null")
                 }
             } catch (e: Exception) {
-                Log.e("BlockAccessService", "Erro ao processar a tarefa periódica", e)
+                Log.e("BlockReelsAccessService", "Erro ao processar a tarefa periódica", e)
             }
 
-            // Reexecuta o Runnable a cada 10 segundos
+            // Reexecuta o Runnable a cada 90 segundos
             handler.postDelayed(this, delayMillis)
         }
     }
@@ -48,7 +48,7 @@ class BlockShortAccessService : AccessibilityService() {
             notificationTimeout = 100
         }
         serviceInfo = info
-        Log.d("BlockAccessService", "Serviço de Acessibilidade conectado")
+        Log.d("BlockReelsAccessService", "Serviço de Acessibilidade conectado")
 
         // Inicia a execução periódica
         handler.post(periodicTask)
@@ -60,50 +60,40 @@ class BlockShortAccessService : AccessibilityService() {
                 val eventPackageName = event.packageName?.toString()
                 val eventType = event.eventType
 
-                // Verifica se está no aplicativo YouTube
-                if (eventPackageName != null && eventPackageName.contains("com.google.android.youtube")) {
+                // Verifica se está no aplicativo Instagram
+                if (eventPackageName != null && eventPackageName.contains("com.instagram.android")) {
                     // Verifica se o evento é um clique
                     if (eventType == AccessibilityEvent.TYPE_VIEW_CLICKED) {
-                        Log.d("BlockAccessService", "Clique detectado")
+                        Log.d("BlockReelsAccessService", "Clique detectado")
                         handleViewClick(event)
                         handleWindowChange()
                     }
 
                     // Verifica eventos de mudança de estado da janela
                     if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-                        val textList = event.text?.joinToString(", ") ?: ""
-                        Log.d(
-                            "BlockAccessService",
-                            "Evento TYPE_WINDOW_STATE_CHANGED detectado."
-                        )
-                            Log.d(
-                                "BlockAccessService",
-                                "Mudança de janela no YouTube detectada com texto [YouTube]"
-                            )
-                            handleViewClick(event)
-                            handleWindowChange()
-
+                        Log.d("BlockReelsAccessService", "Evento TYPE_WINDOW_STATE_CHANGED detectado.")
+                        handleViewClick(event)
+                        handleWindowChange()
                     }
                 }
-
             }
 
         } catch (e: Exception) {
-            Log.e("BlockAccessService", "Erro ao processar o evento de acessibilidade", e)
+            Log.e("BlockReelsAccessService", "Erro ao processar o evento de acessibilidade", e)
         }
     }
 
     override fun onInterrupt() {
-        Log.d("BlockAccessService", "Serviço de Acessibilidade interrompido")
+        Log.d("BlockReelsAccessService", "Serviço de Acessibilidade interrompido")
     }
 
     private fun handleViewClick(event: AccessibilityEvent?) {
         val rootNode = rootInActiveWindow ?: return
         logNodeHierarchy(rootNode)
-        if (isShortsScreen(rootNode)) {
-            Log.d("BlockAccessService", "Detectado clique em prévia de Shorts")
+        if (isReelsScreen(rootNode)) {
+            Log.d("BlockReelsAccessService", "Tela de Reels detectada.")
             Handler().postDelayed({
-                checkShortsScreen()
+                checkReelsScreen()
             }, 250)
         }
     }
@@ -113,36 +103,36 @@ class BlockShortAccessService : AccessibilityService() {
         logNodeHierarchy(rootNode)
 
         // Aqui você garante que a tela está sendo verificada após a mudança de janela
-        if (isShortsScreen(rootNode)) {
-            Log.d("BlockAccessService", "Tela de Shorts detectada após a mudança de janela. Tentando clicar no botão 'Home'...")
+        if (isReelsScreen(rootNode)) {
+            Log.d("BlockReelsAccessService", "Tela de Reels detectada após a mudança de janela. Tentando clicar no botão 'Home'...")
 
             val homeButton = findHomeButton(rootNode)
             if (homeButton != null) {
                 homeButton.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                Log.d("BlockAccessService", "Botão 'Home' clicado com sucesso após mudança de janela.")
+                Log.d("BlockReelsAccessService", "Botão 'Home' clicado com sucesso após mudança de janela.")
             } else {
-                Log.e("BlockAccessService", "Botão 'Home' não encontrado após mudança de janela.")
+                Log.e("BlockReelsAccessService", "Botão 'Home' não encontrado após mudança de janela.")
             }
         }
     }
 
-    private fun checkShortsScreen() {
+    private fun checkReelsScreen() {
         val rootNode = rootInActiveWindow
         if (rootNode != null) {
             logNodeHierarchy(rootNode)
-            if (isShortsScreen(rootNode)) {
-                Log.d("BlockAccessService", "Tela de Shorts detectada. Tentando clicar no botão 'Home'...")
+            if (isReelsScreen(rootNode)) {
+                Log.d("BlockReelsAccessService", "Tela de Reels detectada. Tentando clicar no botão 'Home'...")
 
                 val homeButton = findHomeButton(rootNode)
                 if (homeButton != null) {
                     homeButton.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                    Log.d("BlockAccessService", "Botão 'Home' clicado com sucesso.")
+                    Log.d("BlockReelsAccessService", "Botão 'Home' clicado com sucesso.")
                 } else {
-                    Log.e("BlockAccessService", "Botão 'Home' não encontrado.")
+                    Log.e("BlockReelsAccessService", "Botão 'Home' não encontrado.")
                 }
             }
         } else {
-            Log.e("BlockAccessService", "Root node is null")
+            Log.e("BlockReelsAccessService", "Root node is null")
         }
     }
 
@@ -152,7 +142,7 @@ class BlockShortAccessService : AccessibilityService() {
             val className = child.className?.toString() ?: ""
             val contentDescription = child.contentDescription?.toString() ?: ""
 
-            if (className == "android.widget.Button" && contentDescription.equals("Home", ignoreCase = true)) {
+            if (className == "android.widget.FrameLayout" && contentDescription.contains("Home", ignoreCase = true)) {
                 return child
             }
             val foundButton = findHomeButton(child)
@@ -166,7 +156,7 @@ class BlockShortAccessService : AccessibilityService() {
         val className = node.className ?: "Unknown"
         val text = node.text ?: "No text"
         val contentDescription = node.contentDescription ?: "No content description"
-        Log.d("BlockAccessService", "$prefix Class: $className, Text: $text, ContentDescription: $contentDescription")
+        Log.d("BlockReelsAccessService", "$prefix Class: $className, Text: $text, ContentDescription: $contentDescription")
 
         for (i in 0 until node.childCount) {
             val child = node.getChild(i)
@@ -176,48 +166,43 @@ class BlockShortAccessService : AccessibilityService() {
         }
     }
 
-    private fun isShortsScreen(node: AccessibilityNodeInfo): Boolean {
+    private fun isReelsScreen(node: AccessibilityNodeInfo): Boolean {
         val className = node.className ?: "Unknown"
         val text = node.text ?: "No text"
         val contentDescription = node.contentDescription ?: "No content description"
 
-        if (
-            ( className.contains("ViewGroup", ignoreCase = true) &&
-            contentDescription.contains("See more videos using this sound", ignoreCase = true) )
-        ) {
-            Log.d(
-                "BlockAccessService",
-                "Elemento 'Shorts' encontrado: Class: $className, Text: $text, ContentDescription: $contentDescription"
-            )
+        // Verificando se estamos na tela de Reels
+        if (className.contains("ViewGroup", ignoreCase = true) &&
+            contentDescription.contains("Original audio", ignoreCase = true)) {
+            Log.d("BlockReelsAccessService", "Elemento 'Reels' encontrado: Class: $className, Text: $text, ContentDescription: $contentDescription")
             return true
         }
 
-        // Recursivamente verificar os filhos
+        // Verificação recursiva nos filhos
         for (i in 0 until node.childCount) {
             val child = node.getChild(i) ?: continue
-            if (isShortsScreen(child)) {
-                return true // Se encontrado no filho, retornar imediatamente
+            if (isReelsScreen(child)) {
+                return true
             }
         }
 
-        return isSubscriptionsScreen(node)
+        // Adicionando verificações extras
+        if (isSubscriptionsScreen(node)) {
+            return true
+        }
+
+        return false
     }
 
     private fun isSubscriptionsScreen(node: AccessibilityNodeInfo): Boolean {
         val requiredElements = listOf(
-            // Cada item é um par (className, contentDescription)
-            Pair("Button", "Subscriptions"),
-            Pair("HorizontalScrollView", ""),
-            Pair("View", "Video Progress"),
-            Pair("ImageView", "Go to channel"),
-            Pair("Button", "Subscriptions"),
-            Pair("ImageView", "Search"),
-            Pair("ImageView", "Search"),
             Pair("ImageView", "More"),
-            Pair("FrameLayout", ""),
-            Pair("ImageButton", "Navigate up")
-
+            Pair("ImageView", "Share"),
+            Pair("ImageView", "Comment"),
+            Pair("ImageView", "Like"),
+            Pair("ViewGroup", "Reel")
         )
+
         // Contagem de elementos encontrados
         var elementsFoundCount = 0
 
@@ -226,7 +211,7 @@ class BlockShortAccessService : AccessibilityService() {
             val (className, contentDescription) = requiredElement
             val found = findElementInHierarchy(node, className, contentDescription)
 
-            Log.d("BlockAccessService", "Elemento (Class: $className, ContentDesc: $contentDescription) encontrado: $found")
+            Log.d("BlockReelsAccessService", "Elemento (Class: $className, ContentDesc: $contentDescription) encontrado: $found")
 
             if (found) {
                 elementsFoundCount++
@@ -235,11 +220,11 @@ class BlockShortAccessService : AccessibilityService() {
 
         // Se todos os elementos foram encontrados (tamanho da lista == contagem encontrada), retornamos true
         if (elementsFoundCount == requiredElements.size) {
-            Log.d("BlockAccessService", "Todos os elementos encontrados.")
+            Log.d("BlockReelsAccessService", "Todos os elementos encontrados.")
             return true
         }
 
-        Log.d("BlockAccessService", "Nem todos os elementos foram encontrados.")
+        Log.d("BlockReelsAccessService", "Nem todos os elementos foram encontrados.")
         return false
     }
 
@@ -263,5 +248,4 @@ class BlockShortAccessService : AccessibilityService() {
 
         return false // Se não encontrado, retorna false
     }
-
 }
