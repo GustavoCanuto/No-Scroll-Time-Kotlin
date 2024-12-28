@@ -13,9 +13,9 @@
         android:theme="@style/Theme.No_scroll_time"
         tools:targetApi="31">
 
-        <!-- Serviço de Acessibilidade para bloquear acesso ao YouTube -->
+        <!-- Serviço de Acessibilidade único para bloquear acesso tanto ao YouTube quanto ao Instagram -->
         <service
-            android:name=".BlockShortAccessService"
+            android:name=".BlockAccessService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="false">
             <intent-filter>
@@ -23,20 +23,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config" />
-        </service>
-
-        <!-- Serviço de Acessibilidade para bloquear acesso ao Instagram Reels -->
-        <service
-            android:name=".BlockReelsAccessService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config_reels" />
+                android:resource="@xml/accessibility_service_config_shared" />
         </service>
 
         <!-- Atividade principal -->
