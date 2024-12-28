@@ -10,7 +10,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 class BlockReelsAccessService : AccessibilityService() {
 
     private val handler = Handler() // Criar o Handler
-    private val delayMillis: Long = 90000 // 90 segundos (ajustado conforme necessidade)
+    private val delayMillis: Long = 5000 // 90 segundos (ajustado conforme necessidade)
 
     private val periodicTask = object : Runnable {
         override fun run() {
@@ -172,9 +172,15 @@ class BlockReelsAccessService : AccessibilityService() {
         val contentDescription = node.contentDescription ?: "No content description"
 
         // Verificando se estamos na tela de Reels
-        if (className.contains("ViewGroup", ignoreCase = true) &&
-            contentDescription.contains("Original audio", ignoreCase = true)) {
-            Log.d("BlockReelsAccessService", "Elemento 'Reels' encontrado: Class: $className, Text: $text, ContentDescription: $contentDescription")
+        if ((className.contains("ViewGroup", ignoreCase = true) &&
+            contentDescription.contains("Original audio", ignoreCase = true))
+            &&
+            (className.contains("FrameLayout", ignoreCase = true) &&
+                    contentDescription.contains("Double tap to play or pause", ignoreCase = true))
+            )
+
+        {
+            Log.d("BlockReelsAccessService", "Elemento 'Reels' encontrado por Original audio e: Class: $className, Text: $text, ContentDescription: $contentDescription")
             return true
         }
 
@@ -224,7 +230,7 @@ class BlockReelsAccessService : AccessibilityService() {
             return true
         }
 
-        Log.d("BlockReelsAccessService", "Nem todos os elementos foram encontrados.")
+       // Log.d("BlockReelsAccessService", "Nem todos os elementos foram encontrados.")
         return false
     }
 

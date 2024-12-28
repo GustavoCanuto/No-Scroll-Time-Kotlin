@@ -10,7 +10,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 class BlockShortAccessService : AccessibilityService() {
 
     private val handler = Handler() // Criar o Handler
-    private val delayMillis: Long = 90000 // 10 segundos
+    private val delayMillis: Long = 5000 // 10 segundos
 
     private val periodicTask = object : Runnable {
         override fun run() {
@@ -72,14 +72,14 @@ class BlockShortAccessService : AccessibilityService() {
                     // Verifica eventos de mudança de estado da janela
                     if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
                         val textList = event.text?.joinToString(", ") ?: ""
-                        Log.d(
-                            "BlockAccessService",
-                            "Evento TYPE_WINDOW_STATE_CHANGED detectado."
-                        )
-                            Log.d(
-                                "BlockAccessService",
-                                "Mudança de janela no YouTube detectada com texto [YouTube]"
-                            )
+//                        Log.d(
+//                            "BlockAccessService",
+//                            "Evento TYPE_WINDOW_STATE_CHANGED detectado."
+//                        )
+//                            Log.d(
+//                                "BlockAccessService",
+//                                "Mudança de janela no YouTube detectada com texto [YouTube]"
+//                            )
                             handleViewClick(event)
                             handleWindowChange()
 
@@ -101,7 +101,7 @@ class BlockShortAccessService : AccessibilityService() {
         val rootNode = rootInActiveWindow ?: return
         logNodeHierarchy(rootNode)
         if (isShortsScreen(rootNode)) {
-            Log.d("BlockAccessService", "Detectado clique em prévia de Shorts")
+           // Log.d("BlockAccessService", "Detectado clique em prévia de Shorts")
             Handler().postDelayed({
                 checkShortsScreen()
             }, 250)
@@ -114,7 +114,7 @@ class BlockShortAccessService : AccessibilityService() {
 
         // Aqui você garante que a tela está sendo verificada após a mudança de janela
         if (isShortsScreen(rootNode)) {
-            Log.d("BlockAccessService", "Tela de Shorts detectada após a mudança de janela. Tentando clicar no botão 'Home'...")
+           // Log.d("BlockAccessService", "Tela de Shorts detectada após a mudança de janela. Tentando clicar no botão 'Home'...")
 
             val homeButton = findHomeButton(rootNode)
             if (homeButton != null) {
@@ -131,7 +131,7 @@ class BlockShortAccessService : AccessibilityService() {
         if (rootNode != null) {
             logNodeHierarchy(rootNode)
             if (isShortsScreen(rootNode)) {
-                Log.d("BlockAccessService", "Tela de Shorts detectada. Tentando clicar no botão 'Home'...")
+               // Log.d("BlockAccessService", "Tela de Shorts detectada. Tentando clicar no botão 'Home'...")
 
                 val homeButton = findHomeButton(rootNode)
                 if (homeButton != null) {
@@ -166,7 +166,7 @@ class BlockShortAccessService : AccessibilityService() {
         val className = node.className ?: "Unknown"
         val text = node.text ?: "No text"
         val contentDescription = node.contentDescription ?: "No content description"
-        Log.d("BlockAccessService", "$prefix Class: $className, Text: $text, ContentDescription: $contentDescription")
+       // Log.d("BlockAccessService", "$prefix Class: $className, Text: $text, ContentDescription: $contentDescription")
 
         for (i in 0 until node.childCount) {
             val child = node.getChild(i)
@@ -185,10 +185,10 @@ class BlockShortAccessService : AccessibilityService() {
             ( className.contains("ViewGroup", ignoreCase = true) &&
             contentDescription.contains("See more videos using this sound", ignoreCase = true) )
         ) {
-            Log.d(
-                "BlockAccessService",
-                "Elemento 'Shorts' encontrado: Class: $className, Text: $text, ContentDescription: $contentDescription"
-            )
+//            Log.d(
+//                "BlockAccessService",
+//                "Elemento 'Shorts' encontrado: Class: $className, Text: $text, ContentDescription: $contentDescription"
+//            )
             return true
         }
 
@@ -226,7 +226,7 @@ class BlockShortAccessService : AccessibilityService() {
             val (className, contentDescription) = requiredElement
             val found = findElementInHierarchy(node, className, contentDescription)
 
-            Log.d("BlockAccessService", "Elemento (Class: $className, ContentDesc: $contentDescription) encontrado: $found")
+          //  Log.d("BlockAccessService", "Elemento (Class: $className, ContentDesc: $contentDescription) encontrado: $found")
 
             if (found) {
                 elementsFoundCount++
@@ -235,11 +235,11 @@ class BlockShortAccessService : AccessibilityService() {
 
         // Se todos os elementos foram encontrados (tamanho da lista == contagem encontrada), retornamos true
         if (elementsFoundCount == requiredElements.size) {
-            Log.d("BlockAccessService", "Todos os elementos encontrados.")
+          //  Log.d("BlockAccessService", "Todos os elementos encontrados.")
             return true
         }
 
-        Log.d("BlockAccessService", "Nem todos os elementos foram encontrados.")
+       // Log.d("BlockAccessService", "Nem todos os elementos foram encontrados.")
         return false
     }
 
