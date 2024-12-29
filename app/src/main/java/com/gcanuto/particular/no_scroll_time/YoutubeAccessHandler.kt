@@ -25,11 +25,11 @@ class YoutubeAccessHandler {
 
                     // Verifica eventos de mudança de estado da janela
                     if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-                        val textList = event.text?.joinToString(", ") ?: ""
-                        //                        Log.d(
-                        //                            "BlockAccessService",
-                        //                            "Evento TYPE_WINDOW_STATE_CHANGED detectado."
-                        //                        )
+                        //val textList = event.text?.joinToString(", ") ?: ""
+                                                Log.d(
+                                                    "BlockAccessService",
+                                                    "Evento TYPE_WINDOW_STATE_CHANGED detectado."
+                                                )
                         //                            Log.d(
                         //                                "BlockAccessService",
                         //                                "Mudança de janela no YouTube detectada com texto [YouTube]"
@@ -51,10 +51,10 @@ class YoutubeAccessHandler {
         rootNode ?: return
         logNodeHierarchyYoutube(rootNode)
         if (isShortsScreenYoutube(rootNode)) {
-            // Log.d("BlockAccessService", "Detectado clique em prévia de Shorts")
+            Log.d("BlockAccessService", "Detectado clique em prévia de Shorts")
             Handler().postDelayed({
                 checkShortsScreenYoutube(rootNode)
-            }, 200)
+            }, 300)
         }
     }
 
@@ -84,7 +84,7 @@ class YoutubeAccessHandler {
         if (rootNode != null) {
             logNodeHierarchyYoutube(rootNode)
             if (isShortsScreenYoutube(rootNode)) {
-                // Log.d("BlockAccessService", "Tela de Shorts detectada. Tentando clicar no botão 'Home'...")
+                Log.d("BlockAccessService", "Tela de Shorts detectada. Tentando clicar no botão 'Home'...")
 
                 val homeButton = findHomeButtonYoutube(rootNode)
                 if (homeButton != null) {
@@ -195,7 +195,7 @@ class YoutubeAccessHandler {
 
         // Se todos os elementos foram encontrados (tamanho da lista == contagem encontrada), retornamos true
         if (elementsFoundCount == requiredElements.size) {
-            //  Log.d("BlockAccessService", "Todos os elementos encontrados.")
+              Log.d("BlockAccessService", "Todos os elementos encontrados.")
             return true
         }
 

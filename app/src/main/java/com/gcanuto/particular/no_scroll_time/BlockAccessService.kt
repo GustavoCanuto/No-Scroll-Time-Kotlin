@@ -2,50 +2,44 @@ package com.gcanuto.particular.no_scroll_time
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.content.Context
 import android.os.Handler
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
 
 class BlockAccessService : AccessibilityService() {
 
-    private val handler = Handler() // Criar o Handler
-    private val delayMillis: Long = 3000 // 3 segundos
+    private val handler = Handler()
+    private val delayMillis: Long = 3000
     private val youtubeHandler = YoutubeAccessHandler()
     private val instagramHandler = InstagramAccessHandler(this)
 
     private val periodicTask = object : Runnable {
         override fun run() {
+            if (!isBlockingEnabled()) {
+                return
+            }
+
             try {
-                // Obter o root da tela atual
                 val rootNode = rootInActiveWindow
                 if (rootNode != null) {
-                    // Obter o nome do pacote do aplicativo ativo
                     val currentPackageName = rootNode.packageName?.toString()
 
-                    // Verificar se o aplicativo ativo é o YouTube
-                    if (currentPackageName != null && currentPackageName.contains("com.google.android.youtube")) {
-                        youtubeHandler.logNodeHierarchyYoutube(rootNode) //youtube
-                        // Executar as funções que você quer a cada 3
-                        youtubeHandler.handleViewClickYoube(rootNode)  // Passe o evento real aqui se necessário
+                    if (currentPackageName?.contains("com.google.android.youtube") == true) {
+                        youtubeHandler.logNodeHierarchyYoutube(rootNode)
+                        youtubeHandler.handleViewClickYoube(rootNode)
                         youtubeHandler.handleWindowChangeYoutube(rootNode)
-                    }
-                    // Verificar se o aplicativo ativo é o Instagram
-                    else if (currentPackageName != null && currentPackageName.contains("com.instagram.android")) {
+                    } else if (currentPackageName?.contains("com.instagram.android") == true) {
                         instagramHandler.logNodeHierarchyInstagram(rootNode)
-                        // Executar as funções que você quer a cada 3 segundos
-                        instagramHandler.handleViewClickInstagram(rootNode)  // Passe o evento real aqui se necessário
+                        instagramHandler.handleViewClickInstagram(rootNode)
                         instagramHandler.handleWindowChangeInstagram(rootNode)
                     }
-
                 } else {
                     Log.e("BlockAccessService", "Root node is null")
                 }
             } catch (e: Exception) {
                 Log.e("BlockAccessService", "Erro ao processar a tarefa periódica", e)
             }
-
-            // Reexecuta o Runnable a cada 3 segundos
             handler.postDelayed(this, delayMillis)
         }
     }
@@ -64,35 +58,32 @@ class BlockAccessService : AccessibilityService() {
         serviceInfo = info
         Log.d("BlockAccessService", "Serviço de Acessibilidade conectado")
 
-        // Inicia a execução periódica
         handler.post(periodicTask)
     }
 
+    private fun isBlockingEnabled(): Boolean {
+        val sharedPref = getSharedPreferences("no_scroll_time_prefs", Context.MODE_PRIVATE)
+        return sharedPref.getBoolean("block_enabled", false)
+    }
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        if (!isBlockingEnabled()) {
+            return
+        }
+
         if (event != null) {
             val packageName = event.packageName?.toString()
-
-            // Obter o rootNode aqui
             val rootNode = rootInActiveWindow
 
-            if (packageName != null && packageName.contains("com.google.android.youtube")) {
-                Log.d("BlockAccessService", "Evento detectado no YouTube.")
+            if (packageName?.contains("com.google.android.youtube") == true) {
                 youtubeHandler.onAccessibilityYoutube(event, rootNode)
+            } else if (packageName?.contains("com.instagram.android") == true) {
+                instagramHandler.onAccessibilityInstagram(event, rootNode)
             }
-            else if (packageName != null && packageName.contains("com.instagram.android")) {
-                Log.d("BlockAccessService", "Evento detectado no Instagram.")
-                 instagramHandler.onAccessibilityInstagram(event, rootNode)
-            } else {
-                Log.d("BlockAccessService", "Evento detectado em outro aplicativo.")
-            }
-            }
+        }
     }
 
     override fun onInterrupt() {
         Log.d("BlockAccessService", "Serviço de Acessibilidade interrompido")
     }
-
-
-
-
 }
