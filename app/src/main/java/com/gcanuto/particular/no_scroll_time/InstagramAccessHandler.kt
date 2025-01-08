@@ -165,10 +165,10 @@ class InstagramAccessHandler(private val accessibilityService: AccessibilityServ
             (className.contains("FrameLayout", ignoreCase = true) &&
                     contentDescription.contains("Double tap to play or pause", ignoreCase = true))
         ) {
-            Log.d(
-                "BlockReelsAccessService",
-                "Elemento 'Reels' encontrado por Original audio e: Class: $className, Text: $text, ContentDescription: $contentDescription"
-            )
+//            Log.d(
+//                "BlockReelsAccessService",
+//                "Elemento 'Reels' encontrado por Original audio e: Class: $className, Text: $text, ContentDescription: $contentDescription"
+//            )
             return true
         }
 
