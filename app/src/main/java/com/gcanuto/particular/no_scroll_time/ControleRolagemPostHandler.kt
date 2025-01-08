@@ -12,7 +12,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 class ControleRolagemPostHandler(private val accessibilityService: AccessibilityService) {
 
     private val scrollLimit = 500 // Limite de rolagem
-    private val scrollLimitThreads = 50200
+    private val scrollLimitThreads = 40200
     private var totalScroll = 0
     private var totalScrollY = 0
     private var limiteThreds = false
@@ -121,7 +121,7 @@ class ControleRolagemPostHandler(private val accessibilityService: Accessibility
         if (isScrollLimitEnabled() && isTargetApp(packageName)) {
             val fromIndex = event.fromIndex
             val toIndex = event.toIndex
-            val scrollY = Math.abs(event.scrollY)
+            val scrollY = event.scrollY
 
             val scrollLimit = getScrollLimitForApp(packageName)
 
@@ -135,12 +135,12 @@ class ControleRolagemPostHandler(private val accessibilityService: Accessibility
                 }
                 Log.d("ScrollMonitor", "Movimento vertical detectado Total: $totalScroll")
             }
-            else if (scrollY <= 0) {
+            else if (scrollY > 0) {
                 totalScrollY = scrollY // Usa scrollY como fallback
                 Log.d("ScrollMonitor", "Rolagem detectada com scrollY: $scrollY")
             } else {
                 Log.d("ScrollMonitor", "Índices inválidos e scrollY não disponível")
-                totalScroll = 0
+                totalScroll += 1;
             }
 
             Log.d("ControleRolagem", "Total rolagem: $totalScroll, Total Y: $totalScrollY")
