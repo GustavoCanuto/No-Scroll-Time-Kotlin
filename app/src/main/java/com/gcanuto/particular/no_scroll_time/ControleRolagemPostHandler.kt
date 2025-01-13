@@ -18,7 +18,7 @@ class ControleRolagemPostHandler(private val accessibilityService: Accessibility
     private var limiteThreds = false
 
     // Tempo de reset
-    private val resetIntervalMillis: Long = 5 * 60 * 1000 // 5 minutos
+    private val resetIntervalMillis: Long = 7 * 60 * 1000 // 7 minutos
     private var lastScrollResetTime: Long = 0
 
     /**
@@ -93,6 +93,8 @@ class ControleRolagemPostHandler(private val accessibilityService: Accessibility
         
         // Verifica se o aplicativo é um dos que queremos monitorar
         if (isScrollLimitEnabled() && isTargetApp(packageName)) {
+
+            val scrollLimit = getScrollLimitForApp(packageName)
             // Verifica se o bloqueio de 10 minutos está ativo
             if (totalScroll > scrollLimit || totalScrollY > scrollLimitThreads || limiteThreds) {
 
@@ -152,8 +154,9 @@ class ControleRolagemPostHandler(private val accessibilityService: Accessibility
 //                Log.d("ScrollMonitor", " limiteThreds ${limiteThreds}")
 
                 // Navegar para a tela inicial
-                if(scrollY <= 0){
-                    limiteThreds = true;
+                limiteThreds = true;
+                if(scrollY > 0){
+                    accessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                     Handler().postDelayed({ blockAccess() }, 2000) // Atraso de 1 segundo
                 }else {
                     blockAccess()
