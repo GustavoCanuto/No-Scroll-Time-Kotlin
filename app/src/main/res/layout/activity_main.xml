@@ -28,4 +28,12 @@
         android:text="Limitar Rolagem"
         android:visibility="gone" />
 
+    <Switch
+        android:id="@+id/toggle_web_block"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bloquear Acesso Web"
+        android:visibility="gone" />
+
+
 </LinearLayout>

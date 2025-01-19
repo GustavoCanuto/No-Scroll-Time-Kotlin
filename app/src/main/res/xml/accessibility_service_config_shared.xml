@@ -2,7 +2,7 @@
 <accessibility-service
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeViewClicked|typeViewFocused|typeWindowStateChanged|typeViewScrolled"
-    android:packageNames="com.google.android.youtube,com.instagram.android,com.twitter.android,com.meta.app.threads,com.linkedin.android"
+    android:packageNames="com.google.android.youtube,com.instagram.android,com.twitter.android,com.meta.app.threads,com.linkedin.android,com.android.chrome,org.mozilla.firefox,com.microsoft.emmx"
     android:notificationTimeout="100"
     android:canRetrieveWindowContent="true"
     android:importantForAccessibility="yes" />

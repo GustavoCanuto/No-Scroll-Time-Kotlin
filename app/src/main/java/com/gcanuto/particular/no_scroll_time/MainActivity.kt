@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.Switch
@@ -21,8 +20,9 @@ class MainActivity : AppCompatActivity() {
         val accessibilityButton: Button = findViewById(R.id.accessibility_button)
         val toggleSwitch: Switch = findViewById(R.id.toggle_switch)
         val toggleScrollLimit: Switch = findViewById(R.id.toggle_scroll_limit)
+        val toggleWebBlock: Switch = findViewById(R.id.toggle_web_block)
 
-        updateUI(accessibilityButton, toggleSwitch, toggleScrollLimit)
+        updateUI(accessibilityButton, toggleSwitch, toggleScrollLimit, toggleWebBlock)
 
         accessibilityButton.setOnClickListener {
             val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
@@ -36,6 +36,10 @@ class MainActivity : AppCompatActivity() {
         toggleScrollLimit.setOnCheckedChangeListener { _, isChecked ->
             setScrollLimitEnabled(isChecked)
         }
+
+        toggleWebBlock.setOnCheckedChangeListener { _, isChecked ->
+            setWebBlockEnabled(isChecked)
+        }
     }
 
     override fun onResume() {
@@ -44,21 +48,30 @@ class MainActivity : AppCompatActivity() {
         val accessibilityButton: Button = findViewById(R.id.accessibility_button)
         val toggleSwitch: Switch = findViewById(R.id.toggle_switch)
         val toggleScrollLimit: Switch = findViewById(R.id.toggle_scroll_limit)
+        val toggleWebBlock: Switch = findViewById(R.id.toggle_web_block)
 
-        updateUI(accessibilityButton, toggleSwitch, toggleScrollLimit)
+        updateUI(accessibilityButton, toggleSwitch, toggleScrollLimit, toggleWebBlock)
     }
 
-    private fun updateUI(accessibilityButton: Button, toggleSwitch: Switch, toggleScrollLimit: Switch) {
+    private fun updateUI(
+        accessibilityButton: Button,
+        toggleSwitch: Switch,
+        toggleScrollLimit: Switch,
+        toggleWebBlock: Switch
+    ) {
         if (isAccessibilityEnabled()) {
             accessibilityButton.visibility = View.GONE
             toggleSwitch.visibility = View.VISIBLE
             toggleScrollLimit.visibility = View.VISIBLE
+            toggleWebBlock.visibility = View.VISIBLE
             toggleSwitch.isChecked = isBlockingEnabled()
             toggleScrollLimit.isChecked = isScrollLimitEnabled()
+            toggleWebBlock.isChecked = isWebBlockEnabled()
         } else {
             accessibilityButton.visibility = View.VISIBLE
             toggleSwitch.visibility = View.GONE
             toggleScrollLimit.visibility = View.GONE
+            toggleWebBlock.visibility = View.GONE
         }
     }
 
@@ -74,7 +87,6 @@ class MainActivity : AppCompatActivity() {
             apply()
         }
     }
-
 
     private fun isAccessibilityEnabled(): Boolean {
         val accessibilityManager = getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
@@ -102,6 +114,19 @@ class MainActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("no_scroll_time_prefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             putBoolean("block_enabled", enabled)
+            apply()
+        }
+    }
+
+    private fun isWebBlockEnabled(): Boolean {
+        val sharedPref = getSharedPreferences("no_scroll_time_prefs", Context.MODE_PRIVATE)
+        return sharedPref.getBoolean("web_block_enabled", false)
+    }
+
+    private fun setWebBlockEnabled(enabled: Boolean) {
+        val sharedPref = getSharedPreferences("no_scroll_time_prefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("web_block_enabled", enabled)
             apply()
         }
     }
